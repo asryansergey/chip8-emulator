@@ -1,0 +1,9 @@
+# Binaries
+*.out
+
+# SDL2
+libs/sdl2-2.0.14
+
+# Build and binary dirs
+build/
+bin/
