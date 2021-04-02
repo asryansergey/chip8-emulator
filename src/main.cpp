@@ -1,28 +1,35 @@
 #include <SDL2/SDL.h>
-#include <stdio.h>
 
-const int SCREEN_WIDTH = 640;
-const int SCREEN_HEIGHT = 480;
+#include <cstdio>
+
+#include "EmulatorVM.hpp"
+
+const uint8_t PIXEL_SIZE = 16;
+const int SCREEN_WIDTH = 64 * PIXEL_SIZE;
+const int SCREEN_HEIGHT = 32 * PIXEL_SIZE;
 
 int main(int argc, char* argv[]) {
     SDL_Window* window = nullptr;
 
-    if (SDL_Init(SDL_INIT_VIDEO)) {
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER | SDL_INIT_EVENTS)) {
         printf("%s %s\n", "Could not initialize SDL! Error code: ", SDL_GetError());
     } else {
         window = SDL_CreateWindow("CHIP-8 Emulator",
-                                  SDL_WINDOWPOS_UNDEFINED,
-                                  SDL_WINDOWPOS_UNDEFINED,
+                                  SDL_WINDOWPOS_CENTERED,
+                                  SDL_WINDOWPOS_CENTERED,
                                   SCREEN_WIDTH,
                                   SCREEN_HEIGHT,
                                   SDL_WINDOW_SHOWN);
-        if (window == NULL) {
+        if (window == nullptr) {
             printf("%s %s\n", "Could not create SDL window! Error code: ", SDL_GetError());
         } else {
             SDL_Surface* screen_surface = SDL_GetWindowSurface(window);
-            if (screen_surface == NULL) {
+            if (screen_surface == nullptr) {
                 printf("%s %s\n", "Could not get window surface! Error code: ", SDL_GetError());
             } else {
+                SDL_FillRect(screen_surface, nullptr,
+                             SDL_MapRGB(screen_surface->format, 0xFF, 0xFF, 0xFF));
+                SDL_UpdateWindowSurface(window);
                 SDL_Event event;
                 int is_running = 1;
                 while (is_running) {
@@ -31,9 +38,6 @@ int main(int argc, char* argv[]) {
                             is_running = 0;
                         }
                     }
-                    SDL_FillRect(screen_surface, NULL,
-                                 SDL_MapRGB(screen_surface->format, 0xFF, 0xFF, 0xFF));
-                    SDL_UpdateWindowSurface(window);
                 }
             }
         }
