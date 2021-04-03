@@ -2,7 +2,7 @@
 
 #include <cstdio>
 
-#include "EmulatorVM.hpp"
+#include "emulator_vm.h"
 
 const uint8_t PIXEL_SIZE = 16;
 const int SCREEN_WIDTH = 64 * PIXEL_SIZE;

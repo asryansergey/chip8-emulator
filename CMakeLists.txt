@@ -12,7 +12,7 @@ list(APPEND SDL2_INCLUDES ${PROJECT_SOURCE_DIR}/libs/sdl2-2.0.14/include)
 list(APPEND VM_INCLUDES ${PROJECT_SOURCE_DIR}/src/)
 
 link_directories(${SDL2_LIBS})
-file(GLOB SOURCES "${PROJECT_SOURCE_DIR}/src/*.cpp")
+file(GLOB SOURCES "${PROJECT_SOURCE_DIR}/src/*.cc")
 
 add_executable(chip8Eml ${SOURCES})
 
