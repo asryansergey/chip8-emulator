@@ -5,10 +5,10 @@ By all means this is not supposed to be the most efficient implementation.
 
 
 
-### Issues with running SDL2
+### Issues with using SDL2
 #### MacOS
        
-    When building SDL from source, you have probably got this issue after running the binary:
+    When building SDL2 from source, you have probably got this issue after running the binary:
 
         dyld: Library not loaded: PATH_TO_LIB/libSDL2-2.0.0.dylib
         Referenced from: ./your_binary
