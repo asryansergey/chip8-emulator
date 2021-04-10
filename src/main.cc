@@ -4,10 +4,6 @@
 
 #include "emulator_vm.h"
 
-const uint8_t PIXEL_SIZE = 16;
-const int SCREEN_WIDTH = 64 * PIXEL_SIZE;
-const int SCREEN_HEIGHT = 32 * PIXEL_SIZE;
-
 int main(int argc, char* argv[]) {
     SDL_Window* window = nullptr;
 
