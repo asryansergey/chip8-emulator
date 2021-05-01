@@ -13,8 +13,8 @@ int main(int argc, char* argv[]) {
         window = SDL_CreateWindow("CHIP-8 Emulator",
                                   SDL_WINDOWPOS_CENTERED,
                                   SDL_WINDOWPOS_CENTERED,
-                                  SCREEN_WIDTH,
-                                  SCREEN_HEIGHT,
+                                  64 * 16,
+                                  32 * 16,
                                   SDL_WINDOW_SHOWN);
         if (window == nullptr) {
             printf("%s %s\n", "Could not create SDL window! Error code: ", SDL_GetError());

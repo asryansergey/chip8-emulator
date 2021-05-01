@@ -7,7 +7,7 @@ bool Chip8VM::ReadGameImage(const char* input_name) {
         printf("%s %d\n", "Could not open input image! Error code: ", errno);
         return false;
     }
-    return fread(mem_space + kOffsetAddress, 1, 4096 - kOffsetAddress, f.get()) > 0;
+    return fread(&mem_space[0] + kOffsetAddress, 1, 4096 - kOffsetAddress, f.get()) > 0;
 }
 
 uint16_t Chip8VM::GetValueX(uint16_t opcode) const {
@@ -31,6 +31,7 @@ uint16_t Chip8VM::GetValueNNN(uint16_t opcode) const {
 }
 
 void Chip8VM::Opcode00E0(uint16_t /*opcode*/) {
+    screen_map.ClearScreen();
 }
 
 void Chip8VM::Opcode00EE(uint16_t opcode) {
@@ -56,5 +57,16 @@ void Chip8VM::OpcodeANNN(uint16_t opcode) {
     i = GetValueNNN(opcode);
 }
 
-void Chip8VM::OpcodeDXYN(uint16_t /*opcode*/) {
+void Chip8VM::OpcodeDXYN(uint16_t opcode) {
+    const int nibble{GetValueN(opcode)};
+    const uint8_t vx = v[GetValueX(opcode)] % 64;  // Wrapping around to the
+    uint8_t vy = v[GetValueY(opcode)] % 32;        // opposite side of the screen.
+
+    // TODO(asryansergey): Finish implementation by setting correct value for VF when
+    // pixel value is flipped;
+    for (int i = 0; i <= nibble; ++i, vy++) {
+        for (int j = 0; j < 8; ++j) {
+            screen_map.SetPixelValueAt(vx + j + vy * 64, mem_space.at(this->i + i));
+        }
+    }
 }

@@ -26,7 +26,7 @@ class Chip8VM {
     };
 
     const uint16_t kOffsetAddress = 0x200;
-    uint8_t mem_space[4096] = {};
+    std::vector<uint8_t> mem_space;
     uint8_t v[16] = {};  // Registers
     std::stack<uint16_t> call_stack;
     uint16_t i{};   // Address register;
@@ -83,6 +83,9 @@ class Chip8VM {
     void ExecuteInstruction();
 
    public:
+    Chip8VM() {
+        mem_space.resize(4096);
+    }
     bool ReadGameImage(const char*);
     void Start();
 
