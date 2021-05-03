@@ -13,9 +13,10 @@ class VMDisplayDrawer {
     uint16_t screen_width{SCREEN_WIDTH};
     uint16_t screen_height{SCREEN_HEIGHT};
     std::vector<uint8_t> buffer;
-    uint8_t pixel_flipped{};
 
    public:
+    bool pixel_flipped{false};
+
     VMDisplayDrawer() {
         buffer.resize(screen_height * screen_width);
     }
@@ -26,7 +27,14 @@ class VMDisplayDrawer {
         });
     }
 
-    // TODO (asryansergey): Function for setting display pixel value
-    void SetPixelValueAt(uint8_t position, uint16_t pixel_value) {
+    void SetPixelValueAt(uint8_t position, uint16_t single_pixel_value) {
+        if (buffer.at(position) && single_pixel_value) {
+            pixel_flipped |= true;
+        }
+        buffer.at(position) ^= single_pixel_value;
+    }
+
+    void Redraw() {
+        // TODO (asryansergey): Redraw the window with SDL2
     }
 };

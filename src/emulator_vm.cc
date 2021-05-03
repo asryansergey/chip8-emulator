@@ -62,11 +62,19 @@ void Chip8VM::OpcodeDXYN(uint16_t opcode) {
     const uint8_t vx = v[GetValueX(opcode)] % 64;  // Wrapping around to the
     uint8_t vy = v[GetValueY(opcode)] % 32;        // opposite side of the screen.
 
-    // TODO(asryansergey): Finish implementation by setting correct value for VF when
-    // pixel value is flipped;
+    bool is_flipped = false;
+    uint8_t pixel_value{};
     for (int i = 0; i <= nibble; ++i, vy++) {
+        pixel_value = mem_space.at(this->i + i);
         for (int j = 0; j < 8; ++j) {
-            screen_map.SetPixelValueAt(vx + j + vy * 64, mem_space.at(this->i + i));
+            uint8_t bit = ((pixel_value >> j) & 1);
+            screen_map.SetPixelValueAt(vx + j + vy * 64, bit);
+            if (screen_map.pixel_flipped) {
+                is_flipped |= true;
+            }
         }
     }
+    v[0xf] = is_flipped;
+
+    // TODO(asryansergey): Probably need to redraw the whole screen in VMDisplayDrawer.
 }
