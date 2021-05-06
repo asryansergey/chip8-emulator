@@ -25,20 +25,21 @@ class Chip8VM {
         void (Chip8VM::*handler)(uint16_t);
     };
 
-    const uint16_t kOffsetAddress = 0x200;
+    const uint16_t kOffsetAddress{0x200};
     std::vector<uint8_t> mem_space;
+    std::vector<uint8_t> frame_buffer;
     uint8_t v[16] = {};  // Registers
     std::stack<uint16_t> call_stack;
     uint16_t i{};   // Address register;
     uint16_t pc{};  // Program counter register
+
+    VMDisplayDrawer screen_map{};
 
     uint16_t GetValueX(uint16_t opcode) const;
     uint16_t GetValueY(uint16_t opcode) const;
     uint16_t GetValueN(uint16_t opcode) const;
     uint16_t GetValueNN(uint16_t opcode) const;
     uint16_t GetValueNNN(uint16_t opcode) const;
-
-    VMDisplayDrawer screen_map{};
 
     std::vector<OpcodeSchema>
         opcode_entry = {
@@ -85,6 +86,7 @@ class Chip8VM {
    public:
     Chip8VM() {
         mem_space.resize(4096);
+        frame_buffer.resize(64 * 32);  // Chip8 display resolution is 64x32
     }
     bool ReadGameImage(const char*);
     void Start();

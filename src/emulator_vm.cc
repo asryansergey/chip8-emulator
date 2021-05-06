@@ -31,10 +31,12 @@ uint16_t Chip8VM::GetValueNNN(uint16_t opcode) const {
 }
 
 void Chip8VM::Opcode00E0(uint16_t /*opcode*/) {
-    screen_map.ClearScreen();
+    std::for_each(frame_buffer.begin(), frame_buffer.end(), [](uint8_t& elem) {
+        elem = 0;
+    });
 }
 
-void Chip8VM::Opcode00EE(uint16_t opcode) {
+void Chip8VM::Opcode00EE(uint16_t /*opcode*/) {
     call_stack.push(pc);
 }
 
@@ -68,13 +70,14 @@ void Chip8VM::OpcodeDXYN(uint16_t opcode) {
         pixel_value = mem_space.at(this->i + i);
         for (int j = 0; j < 8; ++j) {
             uint8_t bit = ((pixel_value >> j) & 1);
-            screen_map.SetPixelValueAt(vx + j + vy * 64, bit);
-            if (screen_map.pixel_flipped) {
+            if (bit && frame_buffer.at(vx + j + vy * 64)) {
                 is_flipped |= true;
             }
+            frame_buffer.at(vx + j + vy * 64) ^= bit;
         }
     }
     v[0xf] = is_flipped;
 
+    screen_map.RedrawScreen(frame_buffer);
     // TODO(asryansergey): Probably need to redraw the whole screen in VMDisplayDrawer.
 }
