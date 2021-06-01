@@ -62,10 +62,10 @@ class VMDisplayDrawer {
         for (auto i = y * pixel_size; i < (y + 1) * pixel_size; ++i) {
             for (auto j = x * pixel_size; j < (x + 1) * pixel_size; ++j) {
                 // TODO(asryansergey): Might need to correct byte calculation
-                pixel_array[(screen_height + i) * surface->pitch + (screen_width + j) * 2 + 0] = value;
-                pixel_array[(screen_height + i) * surface->pitch + (screen_width + j) * 2 + 1] = value;
-                pixel_array[(screen_height + i) * surface->pitch + (screen_width + j) * 2 + 2] = value;
-                pixel_array[(screen_height + i) * surface->pitch + (screen_width + j) * 2 + 3] = value;
+                pixel_array[(i * screen_width + j) * 2 + 0] = value;
+                pixel_array[(i * screen_width + j) * 2 + 1] = value;
+                pixel_array[(i * screen_width + j) * 2 + 2] = value;
+                pixel_array[(i * screen_width + j) * 2 + 3] = value;
             }
         }
     }
