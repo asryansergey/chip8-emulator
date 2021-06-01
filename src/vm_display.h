@@ -17,6 +17,7 @@ class VMDisplayDrawer {
     uint16_t screen_height{SCREEN_HEIGHT * PIXEL_SIZE};
     SDL_Window* window{nullptr};
     SDL_Surface* surface{nullptr};
+    uint8_t* pixel_array{nullptr};
 
    public:
     bool pixel_flipped{false};
@@ -31,6 +32,7 @@ class VMDisplayDrawer {
         assert(window != nullptr);
         surface = SDL_GetWindowSurface(window);
         assert(surface != nullptr);
+        pixel_array = static_cast<uint8_t*>(surface->pixels);
     }
 
     ~VMDisplayDrawer() {
@@ -56,9 +58,26 @@ class VMDisplayDrawer {
         }
     }
 
-    void SetPixelValueAt(/*uint8_t position, uint16_t single_pixel_value*/);
+    void DrawScaledPixelsAt(uint8_t x, uint8_t y, uint8_t value) {
+        for (auto i = y * pixel_size; i < (y + 1) * pixel_size; ++i) {
+            for (auto j = x * pixel_size; j < (x + 1) * pixel_size; ++j) {
+                // TODO(asryansergey): Might need to correct byte calculation
+                pixel_array[(screen_height + i) * surface->pitch + (screen_width + j) * 2 + 0] = value;
+                pixel_array[(screen_height + i) * surface->pitch + (screen_width + j) * 2 + 1] = value;
+                pixel_array[(screen_height + i) * surface->pitch + (screen_width + j) * 2 + 2] = value;
+                pixel_array[(screen_height + i) * surface->pitch + (screen_width + j) * 2 + 3] = value;
+            }
+        }
+    }
 
-    void RedrawScreen(vector<uint8_t>& /*frame_buffer*/) {
-        // TODO (asryansergey): Redraw the window with SDL2
+    void RedrawScreen(const vector<uint8_t>& frame_buffer) {
+        if (surface == nullptr) {
+            throw("[-] Surface is not initialized.");
+        }
+        for (auto y = 0; y < SCREEN_HEIGHT; ++y) {
+            for (auto x = 0; x < SCREEN_WIDTH; ++x) {
+                DrawScaledPixelsAt(y, x, frame_buffer[x + y * 64] & 0xff);
+            }
+        }
     }
 };
