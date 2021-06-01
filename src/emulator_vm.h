@@ -30,8 +30,8 @@ class Chip8VM {
     std::vector<uint8_t> frame_buffer;
     uint8_t v[16] = {};  // Registers
     std::stack<uint16_t> call_stack;
-    uint16_t i{};   // Address register;
-    uint16_t pc{};  // Program counter register
+    uint16_t i{0};       // Address register;
+    uint16_t pc{0x200};  // Program counter register
 
     VMDisplayDrawer screen_map{};
 
@@ -89,7 +89,7 @@ class Chip8VM {
         frame_buffer.resize(64 * 32);  // Chip8 display resolution is 64x32
     }
     bool ReadGameImage(const char*);
-    void Start();
+    void ExecutionLoop();
 
     /* Opcode handler functions */
     /* This one is ignored by modern interpreters.

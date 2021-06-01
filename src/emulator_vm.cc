@@ -10,6 +10,25 @@ bool Chip8VM::ReadGameImage(const char* input_name) {
     return fread(&mem_space[0] + kOffsetAddress, 1, 4096 - kOffsetAddress, f.get()) > 0;
 }
 
+void Chip8VM::ExecutionLoop() {
+    for (;;) {
+        if (pc + 1 > 4096) {
+            printf("PC is out of bound (%.4x)\n", pc);
+            return;
+        }
+        uint16_t opcode = mem_space.at(pc) << 8;  // To ensure Big Endianness
+        opcode |= mem_space.at(pc + 1);
+        pc += 2;  // Increment PC to point to next instruction
+
+        for (const auto& entry : opcode_entry) {
+            if ((opcode & entry.mask) == entry.opcode) {
+                (this->*(entry.handler))(opcode);
+                break;
+            }
+        }
+    }
+}
+
 uint16_t Chip8VM::GetValueX(uint16_t opcode) const {
     return (opcode & 0xf00) >> 8;
 }
@@ -96,9 +115,7 @@ void Chip8VM::OpcodeDXYN(uint16_t opcode) {
         }
     }
     v[0xf] = is_flipped;
-
     screen_map.RedrawScreen(frame_buffer);
-    // TODO(asryansergey): Probably need to redraw the whole screen in VMDisplayDrawer.
 }
 
 void Chip8VM::OpcodeEX9E(uint16_t /*opcode*/) {}
