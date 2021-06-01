@@ -45,6 +45,11 @@ void Chip8VM::Opcode1NNN(uint16_t opcode) {
     pc = jump_addr;
 }
 
+void Chip8VM::Opcode2NNN(uint16_t /*opcode*/) {}
+void Chip8VM::Opcode3XNN(uint16_t /*opcode*/) {}
+void Chip8VM::Opcode4XNN(uint16_t /*opcode*/) {}
+void Chip8VM::Opcode5XY0(uint16_t /*opcode*/) {}
+
 void Chip8VM::Opcode6XNN(uint16_t opcode) {
     unsigned int idx = GetValueX(opcode);
     v[idx] = GetValueNN(opcode);
@@ -55,9 +60,23 @@ void Chip8VM::Opcode7XNN(uint16_t opcode) {
     v[idx] += GetValueNN(opcode);
 }
 
+void Chip8VM::Opcode8XY0(uint16_t /*opcode*/) {}
+void Chip8VM::Opcode8XY1(uint16_t /*opcode*/) {}
+void Chip8VM::Opcode8XY2(uint16_t /*opcode*/) {}
+void Chip8VM::Opcode8XY3(uint16_t /*opcode*/) {}
+void Chip8VM::Opcode8XY4(uint16_t /*opcode*/) {}
+void Chip8VM::Opcode8XY5(uint16_t /*opcode*/) {}
+void Chip8VM::Opcode8XY6(uint16_t /*opcode*/) {}
+void Chip8VM::Opcode8XY7(uint16_t /*opcode*/) {}
+void Chip8VM::Opcode8XYE(uint16_t /*opcode*/) {}
+void Chip8VM::Opcode9XY0(uint16_t /*opcode*/) {}
+
 void Chip8VM::OpcodeANNN(uint16_t opcode) {
     i = GetValueNNN(opcode);
 }
+
+void Chip8VM::OpcodeBNNN(uint16_t /*opcode*/) {}
+void Chip8VM::OpcodeCXNN(uint16_t /*opcode*/) {}
 
 void Chip8VM::OpcodeDXYN(uint16_t opcode) {
     const int nibble{GetValueN(opcode)};
@@ -81,3 +100,15 @@ void Chip8VM::OpcodeDXYN(uint16_t opcode) {
     screen_map.RedrawScreen(frame_buffer);
     // TODO(asryansergey): Probably need to redraw the whole screen in VMDisplayDrawer.
 }
+
+void Chip8VM::OpcodeEX9E(uint16_t /*opcode*/) {}
+void Chip8VM::OpcodeEXA1(uint16_t /*opcode*/) {}
+void Chip8VM::OpcodeFX07(uint16_t /*opcode*/) {}
+void Chip8VM::OpcodeFX0A(uint16_t /*opcode*/) {}
+void Chip8VM::OpcodeFX15(uint16_t /*opcode*/) {}
+void Chip8VM::OpcodeFX18(uint16_t /*opcode*/) {}
+void Chip8VM::OpcodeFX1E(uint16_t /*opcode*/) {}
+void Chip8VM::OpcodeFX29(uint16_t /*opcode*/) {}
+void Chip8VM::OpcodeFX33(uint16_t /*opcode*/) {}
+void Chip8VM::OpcodeFX55(uint16_t /*opcode*/) {}
+void Chip8VM::OpcodeFX65(uint16_t /*opcode*/) {}
