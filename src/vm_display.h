@@ -14,7 +14,7 @@ class VMDisplayDrawer {
    private:
     [[maybe_unused]] uint16_t pixel_size{PIXEL_SIZE};
     uint16_t screen_width{SCREEN_WIDTH * PIXEL_SIZE};
-    uint16_t screen_height{SCREEN_HEIGHT * PIXEL_SIZE};
+    [[maybe_unused]] uint16_t screen_height{SCREEN_HEIGHT * PIXEL_SIZE};
     SDL_Window* window{nullptr};
     SDL_Surface* surface{nullptr};
     uint8_t* pixel_array{nullptr};
@@ -44,8 +44,9 @@ class VMDisplayDrawer {
         if (surface == nullptr || window == nullptr) {
             throw("[-] Invalid surface or window member variables.");
         }
-        uint8_t* px = static_cast<uint8_t*>(surface->pixels);
-        px[screen_height / 2 * surface->pitch + screen_width * 2] = 0xff;  // Just for testing.
+
+        // uint8_t* px = static_cast<uint8_t*>(surface->pixels);
+        // px[screen_height / 2 * surface->pitch + screen_width * 2] = 0xff;  // Just for testing.
         SDL_Event event;
         int is_running = 1;
         while (is_running) {
@@ -76,7 +77,7 @@ class VMDisplayDrawer {
         }
         for (auto y = 0; y < SCREEN_HEIGHT; ++y) {
             for (auto x = 0; x < SCREEN_WIDTH; ++x) {
-                DrawScaledPixelsAt(y, x, frame_buffer[x + y * 64] & 0xff);
+                DrawScaledPixelsAt(y, x, frame_buffer[x + y * 64] * 0xff);
             }
         }
     }
