@@ -12,6 +12,9 @@ bool Chip8VM::ReadGameImage(const char* input_name) {
 
 void Chip8VM::ExecutionLoop() {
     for (;;) {
+        if (is_stopped) {
+            break;
+        }
         if (pc + 1 > 4096) {
             printf("PC is out of bound (%.4x)\n", pc);
             return;

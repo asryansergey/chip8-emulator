@@ -44,7 +44,6 @@ class VMDisplayDrawer {
         if (surface == nullptr || window == nullptr) {
             throw("[-] Invalid surface or window member variables.");
         }
-
         // uint8_t* px = static_cast<uint8_t*>(surface->pixels);
         // px[screen_height / 2 * surface->pitch + screen_width * 2] = 0xff;  // Just for testing.
         SDL_Event event;

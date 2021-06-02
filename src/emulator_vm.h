@@ -6,6 +6,7 @@
 #include <cstdlib>
 #include <memory>
 #include <stack>
+#include <thread>
 #include <vector>
 
 #include "vm_display.h"
@@ -32,8 +33,7 @@ class Chip8VM {
     std::stack<uint16_t> call_stack;
     uint16_t i{0};       // Address register;
     uint16_t pc{0x200};  // Program counter register
-
-    VMDisplayDrawer screen_map{};
+    atomic<bool> is_stopped{0};
 
     uint16_t GetValueX(uint16_t opcode) const;
     uint16_t GetValueY(uint16_t opcode) const;
@@ -84,12 +84,19 @@ class Chip8VM {
     void ExecuteInstruction();
 
    public:
+    VMDisplayDrawer screen_map{};
     Chip8VM() {
         mem_space.resize(4096);
         frame_buffer.resize(64 * 32);  // Chip8 display resolution is 64x32
     }
+
+    ~Chip8VM() {}
+
     bool ReadGameImage(const char*);
     void ExecutionLoop();
+    void StopExecutionLoop() {
+        is_stopped = 1;
+    }
 
     /* Opcode handler functions */
     /* This one is ignored by modern interpreters.
