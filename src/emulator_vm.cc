@@ -29,6 +29,7 @@ void Chip8VM::ExecutionLoop() {
                 break;
             }
         }
+        this_thread::sleep_for(2ms);
     }
 }
 
@@ -166,10 +167,10 @@ void Chip8VM::OpcodeDXYN(uint16_t opcode) {
 
     bool is_flipped = false;
     uint8_t pixel_value{};
-    for (int i = 0; i <= nibble; ++i, vy++) {
+    for (int i = 0; i < nibble; ++i, vy++) {
         pixel_value = mem_space.at(this->i + i);
         for (int j = 0; j < 8; ++j) {
-            uint8_t bit = ((pixel_value >> j) & 1);
+            uint8_t bit = ((pixel_value >> (7 - j)) & 1);
             if (bit && frame_buffer.at(vx + j + vy * 64)) {
                 is_flipped |= true;
             }

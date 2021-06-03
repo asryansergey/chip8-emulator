@@ -44,8 +44,6 @@ class VMDisplayDrawer {
         if (surface == nullptr || window == nullptr) {
             throw("[-] Invalid surface or window member variables.");
         }
-        // uint8_t* px = static_cast<uint8_t*>(surface->pixels);
-        // px[screen_height / 2 * surface->pitch + screen_width * 2] = 0xff;  // Just for testing.
         SDL_Event event;
         int is_running = 1;
         while (is_running) {
@@ -59,16 +57,13 @@ class VMDisplayDrawer {
     }
 
     void DrawScaledPixelsAt(uint8_t x, uint8_t y, uint8_t value) {
-        if (x < 0 || x >= 64 || y < 0 || y >= 32) {
-            return;
-        }
         for (auto i = y * pixel_size; i < (y + 1) * pixel_size; ++i) {
             for (auto j = x * pixel_size; j < (x + 1) * pixel_size; ++j) {
                 // TODO(asryansergey): Might need to correct byte calculation
-                pixel_array[(i * screen_width + j) * 2 + 0] = value;
-                pixel_array[(i * screen_width + j) * 2 + 1] = value;
-                pixel_array[(i * screen_width + j) * 2 + 2] = value;
-                pixel_array[(i * screen_width + j) * 2 + 3] = value;
+                pixel_array[(i * screen_width + j) * 4 + 0] = value;
+                pixel_array[(i * screen_width + j) * 4 + 1] = value;
+                pixel_array[(i * screen_width + j) * 4 + 2] = value;
+                pixel_array[(i * screen_width + j) * 4 + 1] = value;
             }
         }
     }
@@ -79,7 +74,7 @@ class VMDisplayDrawer {
         }
         for (auto y = 0; y < SCREEN_HEIGHT; ++y) {
             for (auto x = 0; x < SCREEN_WIDTH; ++x) {
-                DrawScaledPixelsAt(y, x, frame_buffer[x + y * 64] * 0xff);
+                DrawScaledPixelsAt(x, y, frame_buffer[y * 64 + x] * 0xff);
             }
         }
     }
