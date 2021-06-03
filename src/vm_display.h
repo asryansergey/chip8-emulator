@@ -59,6 +59,9 @@ class VMDisplayDrawer {
     }
 
     void DrawScaledPixelsAt(uint8_t x, uint8_t y, uint8_t value) {
+        if (x < 0 || x >= 64 || y < 0 || y >= 32) {
+            return;
+        }
         for (auto i = y * pixel_size; i < (y + 1) * pixel_size; ++i) {
             for (auto j = x * pixel_size; j < (x + 1) * pixel_size; ++j) {
                 // TODO(asryansergey): Might need to correct byte calculation
