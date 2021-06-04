@@ -17,13 +17,13 @@ void VMDisplayDrawer::CreateDisplay() {
 }
 
 void VMDisplayDrawer::DrawScaledPixelsAt(uint8_t x, uint8_t y, uint8_t value) {
-    for (auto i = y * pixel_size; i < (y + 1) * pixel_size; ++i) {
-        for (auto j = x * pixel_size; j < (x + 1) * pixel_size; ++j) {
+    for (auto i = y * kPixelSize; i < (y + 1) * kPixelSize; ++i) {
+        for (auto j = x * kPixelSize; j < (x + 1) * kPixelSize; ++j) {
             // TODO(asryansergey): Might need to correct byte calculation
-            pixel_array[(i * screen_width + j) * 4 + 0] = value;
-            pixel_array[(i * screen_width + j) * 4 + 1] = value;
-            pixel_array[(i * screen_width + j) * 4 + 2] = value;
-            pixel_array[(i * screen_width + j) * 4 + 3] = value;
+            pixel_array[(i * kScreenWidth + j) * 4 + 0] = value;
+            pixel_array[(i * kScreenWidth + j) * 4 + 1] = value;
+            pixel_array[(i * kScreenWidth + j) * 4 + 2] = value;
+            pixel_array[(i * kScreenWidth + j) * 4 + 3] = value;
         }
     }
 }
@@ -32,8 +32,8 @@ void VMDisplayDrawer::RedrawScreen(const vector<uint8_t>& frame_buffer) {
     if (surface == nullptr) {
         throw("[-] Surface is not initialized.");
     }
-    for (auto y = 0; y < SCREEN_HEIGHT; ++y) {
-        for (auto x = 0; x < SCREEN_WIDTH; ++x) {
+    for (auto y = 0; y < ROW_HEIGHT; ++y) {
+        for (auto x = 0; x < ROW_WIDTH; ++x) {
             DrawScaledPixelsAt(x, y, frame_buffer[y * 64 + x] * 0xff);
         }
     }
