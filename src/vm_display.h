@@ -63,7 +63,7 @@ class VMDisplayDrawer {
                 pixel_array[(i * screen_width + j) * 4 + 0] = value;
                 pixel_array[(i * screen_width + j) * 4 + 1] = value;
                 pixel_array[(i * screen_width + j) * 4 + 2] = value;
-                pixel_array[(i * screen_width + j) * 4 + 1] = value;
+                pixel_array[(i * screen_width + j) * 4 + 3] = value;
             }
         }
     }
