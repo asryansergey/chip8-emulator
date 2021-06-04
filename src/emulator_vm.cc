@@ -163,7 +163,7 @@ void Chip8VM::Opcode9XY0(uint16_t opcode) {
 }
 
 void Chip8VM::OpcodeANNN(uint16_t opcode) {
-    i = GetValueNNN(opcode);
+    i = GetValueNNN(opcode) & 0xfff;
 }
 
 void Chip8VM::OpcodeBNNN(uint16_t opcode) {
@@ -203,7 +203,10 @@ void Chip8VM::OpcodeFX07(uint16_t /*opcode*/) {}
 void Chip8VM::OpcodeFX0A(uint16_t /*opcode*/) {}
 void Chip8VM::OpcodeFX15(uint16_t /*opcode*/) {}
 void Chip8VM::OpcodeFX18(uint16_t /*opcode*/) {}
-void Chip8VM::OpcodeFX1E(uint16_t /*opcode*/) {}
+void Chip8VM::OpcodeFX1E(uint16_t opcode) {
+    unsigned id_x = GetValueX(opcode);
+    i = (i + v[id_x]) & 0xfff;
+}
 void Chip8VM::OpcodeFX29(uint16_t /*opcode*/) {}
 void Chip8VM::OpcodeFX33(uint16_t opcode) {
     unsigned id_x = GetValueX(opcode);
@@ -217,12 +220,12 @@ void Chip8VM::OpcodeFX33(uint16_t opcode) {
 void Chip8VM::OpcodeFX55(uint16_t opcode) {
     unsigned id_x = GetValueX(opcode);
     for (unsigned i = 0; i <= id_x; ++i) {
-        mem_space.at(this->i + i) = v[i];
+        mem_space.at(this->i++) = v[i];
     }
 }
 void Chip8VM::OpcodeFX65(uint16_t opcode) {
     unsigned id_x = GetValueX(opcode);
     for (unsigned i = 0; i <= id_x; ++i) {
-        v[i] = mem_space.at(this->i + i);
+        v[i] = mem_space.at(this->i++);
     }
 }
