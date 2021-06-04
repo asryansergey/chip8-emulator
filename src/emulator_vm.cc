@@ -121,14 +121,14 @@ void Chip8VM::Opcode8XY3(uint16_t opcode) {
 void Chip8VM::Opcode8XY4(uint16_t opcode) {
     unsigned id_x = GetValueX(opcode);
     unsigned id_y = GetValueY(opcode);
-    uint16_t res = v[id_x] + v[id_y];
-    v[0xf] = res >= 0x100;
+    uint16_t res = static_cast<uint16_t>(v[id_x]) + static_cast<uint16_t>(v[id_y]);
+    v[0xf] = (res >= 0x100);
     v[id_x] = res & 0xff;
 }
 void Chip8VM::Opcode8XY5(uint16_t opcode) {
     unsigned id_x = GetValueX(opcode);
     unsigned id_y = GetValueY(opcode);
-    v[0xf] = v[id_x] > v[id_y];
+    v[0xf] = (v[id_x] >= v[id_y]);
     v[id_x] -= v[id_y];
 }
 void Chip8VM::Opcode8XY6(uint16_t opcode) {
