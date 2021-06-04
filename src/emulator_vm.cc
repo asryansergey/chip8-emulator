@@ -59,7 +59,8 @@ void Chip8VM::Opcode00E0(uint16_t /*opcode*/) {
 }
 
 void Chip8VM::Opcode00EE(uint16_t /*opcode*/) {
-    call_stack.push(pc);
+    pc = call_stack.top();
+    call_stack.pop();
 }
 
 void Chip8VM::Opcode1NNN(uint16_t opcode) {
@@ -67,7 +68,11 @@ void Chip8VM::Opcode1NNN(uint16_t opcode) {
     pc = jump_addr;
 }
 
-void Chip8VM::Opcode2NNN(uint16_t /*opcode*/) {}
+void Chip8VM::Opcode2NNN(uint16_t opcode) {
+    uint16_t value = GetValueNNN(opcode);
+    call_stack.push(pc);
+    pc = (value & 0xfff);
+}
 void Chip8VM::Opcode3XNN(uint16_t opcode) {
     unsigned id_x = GetValueX(opcode);
     if (v[id_x] == GetValueNN(opcode)) {
@@ -137,7 +142,12 @@ void Chip8VM::Opcode8XY6(uint16_t opcode) {
     v[0xf] = v[id_x] & 0x1;
     v[id_x] = v[id_y] >> 1;  // FIXME (asryansergey): Some confusion around whether shift vx or vy
 }
-void Chip8VM::Opcode8XY7(uint16_t /*opcode*/) {}
+void Chip8VM::Opcode8XY7(uint16_t opcode) {
+    unsigned id_x = GetValueX(opcode);
+    unsigned id_y = GetValueY(opcode);
+    v[0xf] = (v[id_y] >= v[id_x]);
+    v[id_x] = v[id_y] - v[id_x];
+}
 void Chip8VM::Opcode8XYE(uint16_t opcode) {
     unsigned id_x = GetValueX(opcode);
     unsigned id_y = GetValueY(opcode);
@@ -156,8 +166,15 @@ void Chip8VM::OpcodeANNN(uint16_t opcode) {
     i = GetValueNNN(opcode);
 }
 
-void Chip8VM::OpcodeBNNN(uint16_t /*opcode*/) {}
-void Chip8VM::OpcodeCXNN(uint16_t /*opcode*/) {}
+void Chip8VM::OpcodeBNNN(uint16_t opcode) {
+    const uint16_t value = GetValueNNN(opcode);
+    pc = (v[0] + value) & 0xfff;
+}
+void Chip8VM::OpcodeCXNN(uint16_t opcode) {
+    unsigned id_x = GetValueX(opcode);
+    const uint16_t value = GetValueNN(opcode);
+    v[id_x] = (rand() & value) & 0xff;
+}
 
 void Chip8VM::OpcodeDXYN(uint16_t opcode) {
     const int nibble{GetValueN(opcode)};
