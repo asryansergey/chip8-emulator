@@ -35,54 +35,22 @@ class VMKeyboard {
 
    public:
     std::atomic<int8_t> last_key_pressed{-1};
+
     VMKeyboard() {
         keys_pressed.resize(keys.size(), 0);
     }
 
-    int8_t GetKeyIndex(uint16_t key_code) {
-        try {
-            return keys.at(key_code);
-        } catch (const std::out_of_range& e) {
-            printf("%s\n", e.what());
-            return -1;
-        }
-    }
+    int8_t GetKeyIndex(uint16_t key_code) const;
 
-    int MarkKeyAsPressed(SDL_Keycode key_code, uint8_t state) {
-        const int key_idx = GetKeyIndex(key_code);
-        if (key_idx != -1) {
-            keys_pressed[key_idx] = (SDL_PRESSED == state);
-        }
-        return key_idx;
-    }
+    int MarkKeyAsPressed(SDL_Keycode key_code, uint8_t state);
 
-    u_char KeyIsPressed(const int idx) {
-        try {
-            return keys_pressed.at(idx);
-        } catch (const std::out_of_range& e) {
-            printf("%s\n", e.what());
-            return 0;
-        }
-    }
+    u_char KeyIsPressed(const int idx) const;
 
-    void ReleaseAllKeys() {
-        std::for_each(keys_pressed.begin(), keys_pressed.end(), [](u_char& elem) {
-            elem = false;
-        });
-    }
+    void ReleaseAllKeys();
 
-    void AnyKeyIsPressed() {
-        bool all_zero = std::any_of(keys_pressed.begin(), keys_pressed.end(), [](const u_char& elem) {
-            return elem == 1;
-        });
-        if (!all_zero) {
-            last_key_pressed = -1;
-        }
-    }
+    void AnyKeyIsPressed();
 
-    uint16_t GetSize() const {
-        return keys.size();
-    }
+    uint16_t GetSize() const;
 };
 
 class VMDisplayDrawer {
