@@ -41,15 +41,10 @@ class VMKeyboard {
     }
 
     int8_t GetKeyIndex(uint16_t key_code) const;
-
     int MarkKeyAsPressed(SDL_Keycode key_code, uint8_t state);
-
     u_char KeyIsPressed(const int idx) const;
-
     void ReleaseAllKeys();
-
     void AnyKeyIsPressed();
-
     uint16_t GetSize() const;
 };
 
