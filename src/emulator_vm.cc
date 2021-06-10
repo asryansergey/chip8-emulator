@@ -188,14 +188,11 @@ void Chip8VM::OpcodeDXYN(uint16_t opcode) {
         pixel_value = mem_space.at(this->i + i);
         for (int j = 0; j < 8; ++j) {
             uint8_t bit = ((pixel_value >> (7 - j)) & 1);
-            if (bit && frame_buffer.at((vx % 64) + j + (vy % 32) * 64)) {
+            uint16_t pixel_pos = (vx + j + vy * 64) % frame_buffer.size();  // With wrapping around
+            if (bit && frame_buffer.at(pixel_pos)) {
                 is_flipped |= true;
             }
-            try {
-                frame_buffer.at((vx % 64) + j + (vy % 32) * 64) ^= bit;
-            } catch (const std::out_of_range& e) {
-                printf("Invalid Display Pixel %s\n", e.what());
-            }
+            frame_buffer.at(pixel_pos) ^= bit;  // With wrapping around
         }
     }
     v[0xf] = is_flipped;

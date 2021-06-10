@@ -11,6 +11,10 @@ void VMDisplayDrawer::CreateDisplay() {
                 is_running = 0;
                 break;
             }
+            if (event.key.keysym.sym == SDLK_ESCAPE && event.key.state == SDL_PRESSED) {
+                is_running = 0;
+                break;
+            }
             if (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP) {
                 const int idx = keyboard.MarkKeyAsPressed(event.key.keysym.sym, event.key.state);
                 if (keyboard.KeyIsPressed(idx)) {
