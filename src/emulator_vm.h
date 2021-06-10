@@ -85,7 +85,7 @@ class Chip8VM {
     void ExecuteInstruction();
 
    public:
-    VMDisplayDrawer screen_map{};
+    VMDisplayDrawer display_manager{};
     Chip8VM() {
         mem_space.resize(4096);
         frame_buffer.resize(64 * 32);  // Chip8 display resolution is 64x32

@@ -15,20 +15,21 @@ void Chip8VM::ExecutionLoop() {
         if (is_stopped) {
             break;
         }
-        if (pc + 1 > 4096) {
-            printf("PC is out of bound (%.4x)\n", pc);
+        try {
+            uint16_t opcode = mem_space.at(pc) << 8;  // To ensure Big Endianness
+            opcode |= mem_space.at(pc + 1);
+            pc += 2;  // Increment PC to point to next instruction
+            for (const auto& entry : opcode_entry) {
+                if ((opcode & entry.mask) == entry.opcode) {
+                    (this->*(entry.handler))(opcode);
+                    break;
+                }
+            }
+            this_thread::sleep_for(2ms);
+        } catch (const std::out_of_range& e) {
+            printf("PC is out of bound (%.4x). %s\n", pc, e.what());
             return;
         }
-        uint16_t opcode = mem_space.at(pc) << 8;  // To ensure Big Endianness
-        opcode |= mem_space.at(pc + 1);
-        pc += 2;  // Increment PC to point to next instruction
-        for (const auto& entry : opcode_entry) {
-            if ((opcode & entry.mask) == entry.opcode) {
-                (this->*(entry.handler))(opcode);
-                break;
-            }
-        }
-        this_thread::sleep_for(2ms);
     }
 }
 
@@ -194,13 +195,29 @@ void Chip8VM::OpcodeDXYN(uint16_t opcode) {
         }
     }
     v[0xf] = is_flipped;
-    screen_map.RedrawScreen(frame_buffer);
+    display_manager.RedrawScreen(frame_buffer);
 }
 
-void Chip8VM::OpcodeEX9E(uint16_t /*opcode*/) {}
-void Chip8VM::OpcodeEXA1(uint16_t /*opcode*/) {}
+void Chip8VM::OpcodeEX9E(uint16_t opcode) {
+    unsigned id_x = GetValueX(opcode);
+    if (display_manager.keyboard.KeyIsPressed(v[id_x])) {
+        pc += 2;
+    }
+}
+void Chip8VM::OpcodeEXA1(uint16_t opcode) {
+    unsigned id_x = GetValueX(opcode);
+    if (!display_manager.keyboard.KeyIsPressed(v[id_x])) {
+        pc += 2;
+    }
+}
 void Chip8VM::OpcodeFX07(uint16_t /*opcode*/) {}
-void Chip8VM::OpcodeFX0A(uint16_t /*opcode*/) {}
+void Chip8VM::OpcodeFX0A(uint16_t opcode) {
+    unsigned id_x = GetValueX(opcode);
+    for (; display_manager.keyboard.last_key_pressed == -1;) {
+        this_thread::sleep_for(2ms);
+    }
+    v[id_x] = display_manager.keyboard.last_key_pressed & 0xff;
+}
 void Chip8VM::OpcodeFX15(uint16_t /*opcode*/) {}
 void Chip8VM::OpcodeFX18(uint16_t /*opcode*/) {}
 void Chip8VM::OpcodeFX1E(uint16_t opcode) {

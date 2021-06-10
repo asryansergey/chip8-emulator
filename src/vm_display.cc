@@ -4,12 +4,20 @@ void VMDisplayDrawer::CreateDisplay() {
     if (surface == nullptr || window == nullptr) {
         throw("[-] Invalid surface or window member variables.");
     }
-    SDL_Event event;
     int is_running = 1;
     while (is_running) {
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
                 is_running = 0;
+                break;
+            }
+            if (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP) {
+                const int idx = keyboard.MarkKeyAsPressed(event.key.keysym.sym, event.key.state);
+                if (keyboard.KeyIsPressed(idx)) {
+                    keyboard.last_key_pressed = idx;
+                } else {
+                    keyboard.AnyKeyIsPressed();
+                }
             }
         }
         SDL_UpdateWindowSurface(window);

@@ -22,7 +22,7 @@ int main(int argc, char* argv[]) {
     }
 
     thread vm_thread(RunVMThread, vm.get());
-    vm->screen_map.CreateDisplay();
+    vm->display_manager.CreateDisplay();
 
     vm->StopExecutionLoop();
     vm_thread.join();
