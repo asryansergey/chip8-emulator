@@ -1,6 +1,5 @@
 #pragma once
 
-#include <cerrno>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
@@ -9,8 +8,8 @@
 #include <thread>
 #include <vector>
 
-#include "vm_display.h"
 #include "vm_timer.h"
+#include "vm_viewer.h"
 
 // https://dev.krzaq.cc/post/you-dont-need-a-stateful-deleter-in-your-unique_ptr-usually/
 struct FileDeleter {
@@ -87,7 +86,7 @@ class Chip8VM {
     void ExecuteInstruction();
 
    public:
-    VMDisplayDrawer display_manager{};
+    VMViewer viewer_manager{};
     Chip8VM() {
         mem_space.resize(4096, 0);
         frame_buffer.resize(64 * 32, 0);  // Chip8 display resolution is 64x32

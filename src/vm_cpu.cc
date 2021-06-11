@@ -1,4 +1,4 @@
-#include "emulator_vm.h"
+#include "vm_cpu.h"
 
 bool Chip8VM::ReadGameImage(const char* input_name) {
     std::unique_ptr<FILE, FileDeleter> f;
@@ -202,18 +202,18 @@ void Chip8VM::OpcodeDXYN(uint16_t opcode) {
         }
     }
     v[0xf] = is_flipped;
-    display_manager.RedrawScreen(frame_buffer);
+    viewer_manager.RedrawScreen(frame_buffer);
 }
 
 void Chip8VM::OpcodeEX9E(uint16_t opcode) {
     unsigned id_x = GetValueX(opcode);
-    if (display_manager.keyboard.KeyIsPressed(v[id_x])) {
+    if (viewer_manager.keyboard.KeyIsPressed(v[id_x])) {
         pc += 2;
     }
 }
 void Chip8VM::OpcodeEXA1(uint16_t opcode) {
     unsigned id_x = GetValueX(opcode);
-    if (!display_manager.keyboard.KeyIsPressed(v[id_x])) {
+    if (!viewer_manager.keyboard.KeyIsPressed(v[id_x])) {
         pc += 2;
     }
 }
@@ -223,15 +223,15 @@ void Chip8VM::OpcodeFX07(uint16_t opcode) {
 }
 void Chip8VM::OpcodeFX0A(uint16_t opcode) {
     unsigned id_x = GetValueX(opcode);
-    std::unique_lock<std::mutex> lk{display_manager.cv_m};
-    display_manager.cv.wait(lk, [this] {
+    std::unique_lock<std::mutex> lk{viewer_manager.cv_m};
+    viewer_manager.cv.wait(lk, [this] {
         /**
          * TODO(asryansergey): Might be worth adding special key
          * for stopping VM if this thread is blocking.
          */
-        return display_manager.keyboard.last_key_pressed != -1;
+        return viewer_manager.keyboard.last_key_pressed != -1;
     });
-    v[id_x] = display_manager.keyboard.last_key_pressed & 0xff;
+    v[id_x] = viewer_manager.keyboard.last_key_pressed & 0xff;
 }
 void Chip8VM::OpcodeFX15(uint16_t opcode) {
     unsigned id_x = GetValueX(opcode);

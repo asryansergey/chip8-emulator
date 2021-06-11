@@ -13,7 +13,7 @@ const uint8_t PIXEL_SIZE = 16;
 const int ROW_WIDTH = 64;
 const int ROW_HEIGHT = 32;
 
-class VMDisplayDrawer {
+class VMViewer {
    private:
     const uint16_t kPixelSize{PIXEL_SIZE};
     const uint16_t kScreenWidth{ROW_WIDTH * PIXEL_SIZE};
@@ -28,7 +28,7 @@ class VMDisplayDrawer {
     std::condition_variable cv;
     std::mutex cv_m;
 
-    VMDisplayDrawer() {
+    VMViewer() {
         window = SDL_CreateWindow("CHIP-8 Emulator",
                                   SDL_WINDOWPOS_CENTERED,
                                   SDL_WINDOWPOS_CENTERED,
@@ -42,7 +42,7 @@ class VMDisplayDrawer {
         SDL_RenderSetLogicalSize(renderer, kScreenWidth, kScreenHeight);
     }
 
-    ~VMDisplayDrawer() {
+    ~VMViewer() {
         SDL_DestroyRenderer(renderer);
         SDL_DestroyWindow(window);
         SDL_Quit();

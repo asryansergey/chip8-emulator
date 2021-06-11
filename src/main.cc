@@ -2,7 +2,7 @@
 
 #include <cstdio>
 
-#include "emulator_vm.h"
+#include "vm_cpu.h"
 
 int RunVMThread(void* vm_ptr) {
     Chip8VM* vm = static_cast<Chip8VM*>(vm_ptr);
@@ -22,7 +22,7 @@ int main(int argc, char* argv[]) {
     }
 
     thread vm_thread(RunVMThread, vm.get());
-    vm->display_manager.CreateDisplay();
+    vm->viewer_manager.CreateDisplay();
 
     vm->StopExecutionLoop();
     vm_thread.join();

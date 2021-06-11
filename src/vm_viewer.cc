@@ -1,6 +1,6 @@
-#include "vm_display.h"
+#include "vm_viewer.h"
 
-void VMDisplayDrawer::CreateDisplay() {
+void VMViewer::CreateDisplay() {
     if (renderer == nullptr || window == nullptr) {
         throw("[-] Invalid renderer or window member variables.");
     }
@@ -35,7 +35,7 @@ void VMDisplayDrawer::CreateDisplay() {
     }
 }
 
-void VMDisplayDrawer::RedrawScreen(const vector<uint8_t>& frame_buffer) {
+void VMViewer::RedrawScreen(const vector<uint8_t>& frame_buffer) {
     if (renderer == nullptr) {
         throw("[-] Renderer is not initialized.");
     }
