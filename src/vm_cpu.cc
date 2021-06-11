@@ -62,6 +62,11 @@ uint16_t Chip8VM::GetValueNNN(uint16_t opcode) const {
     return opcode & 0xfff;
 }
 
+void Chip8VM::Opcode0NNN(uint16_t opcode) {
+    uint16_t jump_addr = GetValueNNN(opcode);
+    pc = jump_addr;
+}
+
 void Chip8VM::Opcode00E0(uint16_t /*opcode*/) {
     std::for_each(frame_buffer.begin(), frame_buffer.end(), [](uint8_t& elem) {
         elem = 0;

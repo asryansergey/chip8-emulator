@@ -64,9 +64,9 @@ class Chip8VM {
 
     std::vector<OpcodeSchema>
         opcode_entry = {
-            /* {"0NNN", 0x0000, 0xF000, &Chip8VM::Opcode0NNN }, */
             {"00E0", 0x00E0, 0xFFFF, &Chip8VM::Opcode00E0},
             {"00EE", 0x00EE, 0xFFFF, &Chip8VM::Opcode00EE},
+            {"0NNN", 0x0000, 0xF000, &Chip8VM::Opcode0NNN},
             {"1NNN", 0x1000, 0xF000, &Chip8VM::Opcode1NNN},
             {"2NNN", 0x2000, 0xF000, &Chip8VM::Opcode2NNN},
             {"3XNN", 0x3000, 0xF000, &Chip8VM::Opcode3XNN},
@@ -119,11 +119,10 @@ class Chip8VM {
         is_stopped = 1;
     }
 
-    /* Opcode handler functions */
-    /**
-     * This one is ignored by modern interpreters:
-     *     void Opcode0NNN(uint16_t opcode);
+    /** Opcode handler functions
+     * Opcode0NNN is ignored by modern interpreters:
      */
+    void Opcode0NNN(uint16_t opcode);
     void Opcode00E0(uint16_t opcode);
     void Opcode00EE(uint16_t opcode);
     void Opcode1NNN(uint16_t opcode);
