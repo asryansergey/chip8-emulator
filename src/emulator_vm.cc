@@ -11,6 +11,7 @@ bool Chip8VM::ReadGameImage(const char* input_name) {
 }
 
 void Chip8VM::ExecutionLoop() {
+    auto start_time = std::chrono::system_clock::now();
     for (;;) {
         if (is_stopped) {
             break;
@@ -19,6 +20,17 @@ void Chip8VM::ExecutionLoop() {
             uint16_t opcode = mem_space.at(pc) << 8;  // To ensure Big Endianness
             opcode |= mem_space.at(pc + 1);
             pc += 2;  // Increment PC to point to next instruction
+
+            if (delay_timer > 0) {
+                const std::chrono::duration<double, std::milli> freq_ms = hz60;
+                auto now = std::chrono::system_clock::now();
+                auto diff_ms = std::chrono::duration_cast<std::chrono::milliseconds>(now - start_time);
+                if (diff_ms >= freq_ms) {
+                    delay_timer -= 1;
+                    start_time += std::chrono::duration_cast<std::chrono::milliseconds>(freq_ms);
+                }
+            }
+
             for (const auto& entry : opcode_entry) {
                 if ((opcode & entry.mask) == entry.opcode) {
                     (this->*(entry.handler))(opcode);
@@ -184,7 +196,7 @@ void Chip8VM::OpcodeDXYN(uint16_t opcode) {
 
     bool is_flipped = false;
     uint8_t pixel_value{};
-    for (int i = 0; i < nibble; ++i, vy++) {
+    for (int i = 0; i < nibble; ++i, ++vy) {
         pixel_value = mem_space.at(this->i + i);
         for (int j = 0; j < 8; ++j) {
             uint8_t bit = ((pixel_value >> (7 - j)) & 1);
@@ -211,7 +223,10 @@ void Chip8VM::OpcodeEXA1(uint16_t opcode) {
         pc += 2;
     }
 }
-void Chip8VM::OpcodeFX07(uint16_t /*opcode*/) {}
+void Chip8VM::OpcodeFX07(uint16_t opcode) {
+    unsigned id_x = GetValueX(opcode);
+    v[id_x] = delay_timer;
+}
 void Chip8VM::OpcodeFX0A(uint16_t opcode) {
     unsigned id_x = GetValueX(opcode);
     std::unique_lock<std::mutex> lk{display_manager.cv_m};
@@ -224,7 +239,10 @@ void Chip8VM::OpcodeFX0A(uint16_t opcode) {
     });
     v[id_x] = display_manager.keyboard.last_key_pressed & 0xff;
 }
-void Chip8VM::OpcodeFX15(uint16_t /*opcode*/) {}
+void Chip8VM::OpcodeFX15(uint16_t opcode) {
+    unsigned id_x = GetValueX(opcode);
+    delay_timer = v[id_x];
+}
 void Chip8VM::OpcodeFX18(uint16_t /*opcode*/) {}
 void Chip8VM::OpcodeFX1E(uint16_t opcode) {
     unsigned id_x = GetValueX(opcode);

@@ -35,6 +35,8 @@ class Chip8VM {
     uint16_t i{0};       // Address register;
     uint16_t pc{0x200};  // Program counter register
     atomic<bool> is_stopped{0};
+    uint8_t delay_timer{};
+    const std::chrono::duration<double, std::ratio<1, 60>> hz60{1};
 
     uint16_t GetValueX(uint16_t opcode) const;
     uint16_t GetValueY(uint16_t opcode) const;
@@ -87,8 +89,8 @@ class Chip8VM {
    public:
     VMDisplayDrawer display_manager{};
     Chip8VM() {
-        mem_space.resize(4096);
-        frame_buffer.resize(64 * 32);  // Chip8 display resolution is 64x32
+        mem_space.resize(4096, 0);
+        frame_buffer.resize(64 * 32, 0);  // Chip8 display resolution is 64x32
     }
 
     ~Chip8VM() {}

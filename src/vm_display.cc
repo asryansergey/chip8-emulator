@@ -46,8 +46,8 @@ uint16_t VMKeyboard::GetSize() const {
 }
 
 void VMDisplayDrawer::CreateDisplay() {
-    if (surface == nullptr || window == nullptr) {
-        throw("[-] Invalid surface or window member variables.");
+    if (renderer == nullptr || window == nullptr) {
+        throw("[-] Invalid renderer or window member variables.");
     }
     int is_running = 1;
     while (is_running) {
@@ -56,8 +56,14 @@ void VMDisplayDrawer::CreateDisplay() {
                 is_running = 0;
                 break;
             }
-            if (event.key.keysym.sym == SDLK_ESCAPE && event.key.state == SDL_PRESSED) {
+            if (event.key.keysym.sym == SDLK_ESCAPE && event.type == SDL_KEYDOWN) {
                 is_running = 0;
+                /**
+                 * TODO(asryansergey): If no value is assigned to last_key_pressed
+                 * thread is blocked when ESC is pressed first.
+                 */
+                keyboard.last_key_pressed = -2;
+                cv.notify_one();
                 break;
             }
             if (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP) {
@@ -71,29 +77,24 @@ void VMDisplayDrawer::CreateDisplay() {
                 cv.notify_one();
             }
         }
-        SDL_UpdateWindowSurface(window);
-    }
-}
-
-void VMDisplayDrawer::DrawScaledPixelsAt(uint8_t x, uint8_t y, uint8_t value) {
-    for (auto i = y * kPixelSize; i < (y + 1) * kPixelSize; ++i) {
-        for (auto j = x * kPixelSize; j < (x + 1) * kPixelSize; ++j) {
-            // TODO(asryansergey): Might need to correct byte calculation
-            pixel_array[(i * kScreenWidth + j) * 4 + 0] = value;
-            pixel_array[(i * kScreenWidth + j) * 4 + 1] = value;
-            pixel_array[(i * kScreenWidth + j) * 4 + 2] = value;
-            pixel_array[(i * kScreenWidth + j) * 4 + 3] = value;
-        }
     }
 }
 
 void VMDisplayDrawer::RedrawScreen(const vector<uint8_t>& frame_buffer) {
-    if (surface == nullptr) {
-        throw("[-] Surface is not initialized.");
+    if (renderer == nullptr) {
+        throw("[-] Renderer is not initialized.");
     }
-    for (auto y = 0; y < ROW_HEIGHT; ++y) {
-        for (auto x = 0; x < ROW_WIDTH; ++x) {
-            DrawScaledPixelsAt(x, y, frame_buffer[y * 64 + x] * 0xff);
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+    SDL_RenderClear(renderer);
+    SDL_SetRenderDrawColor(renderer, 0xff, 0xff, 0xff, SDL_ALPHA_OPAQUE);
+    SDL_Rect line{};
+    for (auto i = 0; i < ROW_HEIGHT * ROW_WIDTH; ++i) {
+        if (frame_buffer[i]) {
+            uint16_t x = i % ROW_WIDTH;
+            uint16_t y = floor(i * 1.0 / ROW_WIDTH);
+            line = {x * kPixelSize, y * kPixelSize, kPixelSize - 1, kPixelSize - 1};
+            SDL_RenderFillRect(renderer, &line);
         }
     }
+    SDL_RenderPresent(renderer);
 }
