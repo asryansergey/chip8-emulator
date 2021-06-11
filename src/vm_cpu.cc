@@ -7,6 +7,9 @@ bool Chip8VM::ReadGameImage(const char* input_name) {
         printf("%s %d\n", "Could not open input image! Error code: ", errno);
         return false;
     }
+    for (uint8_t i = 0; i < fonts.size(); ++i) {
+        mem_space[i] = fonts[i];
+    }
     return fread(&mem_space[0] + kOffsetAddress, 1, 4096 - kOffsetAddress, f.get()) > 0;
 }
 
@@ -262,7 +265,11 @@ void Chip8VM::OpcodeFX1E(uint16_t opcode) {
     i = (i + v[id_x]) & 0xfff;
 }
 
-void Chip8VM::OpcodeFX29(uint16_t /*opcode*/) {}
+void Chip8VM::OpcodeFX29(uint16_t opcode) {
+    unsigned id_x = GetValueX(opcode);
+    uint16_t font_position = v[id_x];
+    this->i = font_position * 5;
+}
 
 void Chip8VM::OpcodeFX33(uint16_t opcode) {
     unsigned id_x = GetValueX(opcode);
