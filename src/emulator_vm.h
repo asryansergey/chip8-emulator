@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "vm_display.h"
+#include "vm_timer.h"
 
 // https://dev.krzaq.cc/post/you-dont-need-a-stateful-deleter-in-your-unique_ptr-usually/
 struct FileDeleter {
@@ -35,8 +36,7 @@ class Chip8VM {
     uint16_t i{0};       // Address register;
     uint16_t pc{0x200};  // Program counter register
     atomic<bool> is_stopped{0};
-    uint8_t delay_timer{};
-    const std::chrono::duration<double, std::ratio<1, 60>> hz60{1};
+    VMTimer timer{};
 
     uint16_t GetValueX(uint16_t opcode) const;
     uint16_t GetValueY(uint16_t opcode) const;

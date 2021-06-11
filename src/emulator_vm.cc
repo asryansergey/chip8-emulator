@@ -11,7 +11,7 @@ bool Chip8VM::ReadGameImage(const char* input_name) {
 }
 
 void Chip8VM::ExecutionLoop() {
-    auto start_time = std::chrono::system_clock::now();
+    timer.UpdateStartTime();
     for (;;) {
         if (is_stopped) {
             break;
@@ -21,14 +21,8 @@ void Chip8VM::ExecutionLoop() {
             opcode |= mem_space.at(pc + 1);
             pc += 2;  // Increment PC to point to next instruction
 
-            if (delay_timer > 0) {
-                const std::chrono::duration<double, std::milli> freq_ms = hz60;
-                auto now = std::chrono::system_clock::now();
-                auto diff_ms = std::chrono::duration_cast<std::chrono::milliseconds>(now - start_time);
-                if (diff_ms >= freq_ms) {
-                    delay_timer -= 1;
-                    start_time += std::chrono::duration_cast<std::chrono::milliseconds>(freq_ms);
-                }
+            if (timer.IsDelayTimerActive()) {
+                timer.UpdateDelayTimeAndDuration();
             }
 
             for (const auto& entry : opcode_entry) {
@@ -225,7 +219,7 @@ void Chip8VM::OpcodeEXA1(uint16_t opcode) {
 }
 void Chip8VM::OpcodeFX07(uint16_t opcode) {
     unsigned id_x = GetValueX(opcode);
-    v[id_x] = delay_timer;
+    v[id_x] = timer.delay_timer;
 }
 void Chip8VM::OpcodeFX0A(uint16_t opcode) {
     unsigned id_x = GetValueX(opcode);
@@ -241,7 +235,7 @@ void Chip8VM::OpcodeFX0A(uint16_t opcode) {
 }
 void Chip8VM::OpcodeFX15(uint16_t opcode) {
     unsigned id_x = GetValueX(opcode);
-    delay_timer = v[id_x];
+    timer.delay_timer = v[id_x];
 }
 void Chip8VM::OpcodeFX18(uint16_t /*opcode*/) {}
 void Chip8VM::OpcodeFX1E(uint16_t opcode) {
