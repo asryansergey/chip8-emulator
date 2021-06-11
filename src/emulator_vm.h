@@ -100,8 +100,10 @@ class Chip8VM {
     }
 
     /* Opcode handler functions */
-    /* This one is ignored by modern interpreters.
-        void Opcode0NNN(uint16_t opcode); */
+    /**
+     * This one is ignored by modern interpreters:
+     *     void Opcode0NNN(uint16_t opcode);
+     */
     void Opcode00E0(uint16_t opcode);
     void Opcode00EE(uint16_t opcode);
     void Opcode1NNN(uint16_t opcode);

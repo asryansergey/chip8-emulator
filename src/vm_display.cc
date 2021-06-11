@@ -62,11 +62,13 @@ void VMDisplayDrawer::CreateDisplay() {
             }
             if (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP) {
                 const int idx = keyboard.MarkKeyAsPressed(event.key.keysym.sym, event.key.state);
+                std::lock_guard<std::mutex> lk(cv_m);
                 if (keyboard.KeyIsPressed(idx)) {
                     keyboard.last_key_pressed = idx;
                 } else {
                     keyboard.AnyKeyIsPressed();
                 }
+                cv.notify_one();
             }
         }
         SDL_UpdateWindowSurface(window);

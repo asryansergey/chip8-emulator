@@ -27,7 +27,7 @@ void Chip8VM::ExecutionLoop() {
             }
             this_thread::sleep_for(2ms);
         } catch (const std::out_of_range& e) {
-            printf("PC is out of bound (%.4x). %s\n", pc, e.what());
+            printf("PC is out of bound 0x%.4x. %s\n", pc, e.what());
             return;
         }
     }
@@ -214,9 +214,14 @@ void Chip8VM::OpcodeEXA1(uint16_t opcode) {
 void Chip8VM::OpcodeFX07(uint16_t /*opcode*/) {}
 void Chip8VM::OpcodeFX0A(uint16_t opcode) {
     unsigned id_x = GetValueX(opcode);
-    for (; display_manager.keyboard.last_key_pressed == -1;) {
-        this_thread::sleep_for(2ms);
-    }
+    std::unique_lock<std::mutex> lk{display_manager.cv_m};
+    display_manager.cv.wait(lk, [this] {
+        /**
+         * TODO(asryansergey): Might be worth adding special key
+         * for stopping VM if this thread is blocking.
+         */
+        return display_manager.keyboard.last_key_pressed != -1;
+    });
     v[id_x] = display_manager.keyboard.last_key_pressed & 0xff;
 }
 void Chip8VM::OpcodeFX15(uint16_t /*opcode*/) {}

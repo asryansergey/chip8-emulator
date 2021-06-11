@@ -2,6 +2,7 @@
 #include <SDL2/SDL.h>
 
 #include <algorithm>
+#include <condition_variable>
 #include <cstdint>
 #include <unordered_map>
 #include <vector>
@@ -60,6 +61,10 @@ class VMDisplayDrawer {
    public:
     SDL_Event event{};
     VMKeyboard keyboard{};
+    // To ensure thread safety.
+    std::condition_variable cv;
+    std::mutex cv_m;
+
     VMDisplayDrawer() {
         window = SDL_CreateWindow("CHIP-8 Emulator",
                                   SDL_WINDOWPOS_CENTERED,
@@ -71,7 +76,6 @@ class VMDisplayDrawer {
         surface = SDL_GetWindowSurface(window);
         assert(surface != nullptr);
         pixel_array = static_cast<uint8_t*>(surface->pixels);
-        //keys_pressed.resize(keyboard.GetSize(), 0);
     }
 
     ~VMDisplayDrawer() {
