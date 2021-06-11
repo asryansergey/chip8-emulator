@@ -80,18 +80,21 @@ void Chip8VM::Opcode2NNN(uint16_t opcode) {
     call_stack.push(pc);
     pc = (value & 0xfff);
 }
+
 void Chip8VM::Opcode3XNN(uint16_t opcode) {
     unsigned id_x = GetValueX(opcode);
     if (v[id_x] == GetValueNN(opcode)) {
         pc += 2;
     }
 }
+
 void Chip8VM::Opcode4XNN(uint16_t opcode) {
     unsigned id_x = GetValueX(opcode);
     if (v[id_x] != GetValueNN(opcode)) {
         pc += 2;
     }
 }
+
 void Chip8VM::Opcode5XY0(uint16_t opcode) {
     unsigned id_x = GetValueX(opcode);
     unsigned id_y = GetValueY(opcode);
@@ -115,21 +118,25 @@ void Chip8VM::Opcode8XY0(uint16_t opcode) {
     unsigned id_y = GetValueY(opcode);
     v[id_x] = v[id_y];
 }
+
 void Chip8VM::Opcode8XY1(uint16_t opcode) {
     unsigned id_x = GetValueX(opcode);
     unsigned id_y = GetValueY(opcode);
     v[id_x] |= v[id_y];
 }
+
 void Chip8VM::Opcode8XY2(uint16_t opcode) {
     unsigned id_x = GetValueX(opcode);
     unsigned id_y = GetValueY(opcode);
     v[id_x] &= v[id_y];
 }
+
 void Chip8VM::Opcode8XY3(uint16_t opcode) {
     unsigned id_x = GetValueX(opcode);
     unsigned id_y = GetValueY(opcode);
     v[id_x] ^= v[id_y];
 }
+
 void Chip8VM::Opcode8XY4(uint16_t opcode) {
     unsigned id_x = GetValueX(opcode);
     unsigned id_y = GetValueY(opcode);
@@ -137,30 +144,35 @@ void Chip8VM::Opcode8XY4(uint16_t opcode) {
     v[0xf] = (res >= 0x100);
     v[id_x] = res & 0xff;
 }
+
 void Chip8VM::Opcode8XY5(uint16_t opcode) {
     unsigned id_x = GetValueX(opcode);
     unsigned id_y = GetValueY(opcode);
     v[0xf] = (v[id_x] >= v[id_y]);
     v[id_x] -= v[id_y];
 }
+
 void Chip8VM::Opcode8XY6(uint16_t opcode) {
     unsigned id_x = GetValueX(opcode);
     unsigned id_y = GetValueY(opcode);
     v[0xf] = v[id_x] & 0x1;
     v[id_x] = v[id_y] >> 1;  // FIXME (asryansergey): Some confusion around whether shift vx or vy
 }
+
 void Chip8VM::Opcode8XY7(uint16_t opcode) {
     unsigned id_x = GetValueX(opcode);
     unsigned id_y = GetValueY(opcode);
     v[0xf] = (v[id_y] >= v[id_x]);
     v[id_x] = v[id_y] - v[id_x];
 }
+
 void Chip8VM::Opcode8XYE(uint16_t opcode) {
     unsigned id_x = GetValueX(opcode);
     unsigned id_y = GetValueY(opcode);
     v[0xf] = v[id_x] >> 7;
     v[id_x] = v[id_y] << 1;  // FIXME (asryansergey): Some confusion around whether shift vx or vy
 }
+
 void Chip8VM::Opcode9XY0(uint16_t opcode) {
     unsigned id_x = GetValueX(opcode);
     unsigned id_y = GetValueY(opcode);
@@ -177,6 +189,7 @@ void Chip8VM::OpcodeBNNN(uint16_t opcode) {
     const uint16_t value = GetValueNNN(opcode);
     pc = (v[0] + value) & 0xfff;
 }
+
 void Chip8VM::OpcodeCXNN(uint16_t opcode) {
     unsigned id_x = GetValueX(opcode);
     const uint16_t value = GetValueNN(opcode);
@@ -211,16 +224,19 @@ void Chip8VM::OpcodeEX9E(uint16_t opcode) {
         pc += 2;
     }
 }
+
 void Chip8VM::OpcodeEXA1(uint16_t opcode) {
     unsigned id_x = GetValueX(opcode);
     if (!viewer_manager.keyboard.KeyIsPressed(v[id_x])) {
         pc += 2;
     }
 }
+
 void Chip8VM::OpcodeFX07(uint16_t opcode) {
     unsigned id_x = GetValueX(opcode);
     v[id_x] = timer.delay_timer;
 }
+
 void Chip8VM::OpcodeFX0A(uint16_t opcode) {
     unsigned id_x = GetValueX(opcode);
     std::unique_lock<std::mutex> lk{viewer_manager.cv_m};
@@ -233,16 +249,21 @@ void Chip8VM::OpcodeFX0A(uint16_t opcode) {
     });
     v[id_x] = viewer_manager.keyboard.last_key_pressed & 0xff;
 }
+
 void Chip8VM::OpcodeFX15(uint16_t opcode) {
     unsigned id_x = GetValueX(opcode);
     timer.delay_timer = v[id_x];
 }
+
 void Chip8VM::OpcodeFX18(uint16_t /*opcode*/) {}
+
 void Chip8VM::OpcodeFX1E(uint16_t opcode) {
     unsigned id_x = GetValueX(opcode);
     i = (i + v[id_x]) & 0xfff;
 }
+
 void Chip8VM::OpcodeFX29(uint16_t /*opcode*/) {}
+
 void Chip8VM::OpcodeFX33(uint16_t opcode) {
     unsigned id_x = GetValueX(opcode);
     uint8_t bcd = v[id_x];
@@ -252,12 +273,14 @@ void Chip8VM::OpcodeFX33(uint16_t opcode) {
         bcd /= 10;
     }
 }
+
 void Chip8VM::OpcodeFX55(uint16_t opcode) {
     unsigned id_x = GetValueX(opcode);
     for (unsigned i = 0; i <= id_x; ++i) {
         mem_space.at(this->i++) = v[i];
     }
 }
+
 void Chip8VM::OpcodeFX65(uint16_t opcode) {
     unsigned id_x = GetValueX(opcode);
     for (unsigned i = 0; i <= id_x; ++i) {
