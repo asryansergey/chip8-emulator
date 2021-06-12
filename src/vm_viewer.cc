@@ -21,6 +21,11 @@ void VMViewer::CreateDisplay() {
                 cv.notify_one();
                 break;
             }
+            if (event.key.keysym.sym == SDLK_SPACE && event.type == SDL_KEYDOWN) {
+                is_running = 0;
+                keyboard.request_reload = 1;
+                break;
+            }
             if (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP) {
                 const int idx = keyboard.MarkKeyAsPressed(event.key.keysym.sym, event.key.state);
                 std::lock_guard<std::mutex> lk(cv_m);

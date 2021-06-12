@@ -108,6 +108,7 @@ class Chip8VM {
 
    public:
     VMViewer viewer_manager{};
+
     Chip8VM() {
         frame_buffer.resize(64 * 32, 0);  // Chip8 display resolution is 64x32
         mem_space.resize(4096, 0);
@@ -118,8 +119,13 @@ class Chip8VM {
 
     bool ReadGameImage(const char*);
     void ExecutionLoop();
+
     void StopExecutionLoop() {
         is_stopped = 1;
+    }
+
+    bool IsReloadRequested() {
+        return viewer_manager.keyboard.request_reload;
     }
 
     /** Opcode handler functions

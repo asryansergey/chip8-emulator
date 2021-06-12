@@ -15,16 +15,26 @@ int main(int argc, char* argv[]) {
         printf("%s\n", "[!] Game image path is not specified.");
         return 1;
     }
-    auto vm = make_unique<Chip8VM>();
-    if (!vm->ReadGameImage(argv[1])) {
-        printf("%s\n", "[!] Couldn't read game image!");
-        return 1;
+    /**
+     * TODO(asryansergey): Can create an abstraction layer for managing
+     * the emulator (start, pause/stop, reset, etc.) insted of doing like this.
+     * [For now, just simply press SPACE to reload the game without rerunning the binary)]
+     */
+    for (;;) {
+        auto vm = make_unique<Chip8VM>();
+        if (!vm->ReadGameImage(argv[1])) {
+            printf("%s\n", "[!] Couldn't read game image!");
+            return 1;
+        }
+
+        thread vm_thread(RunVMThread, vm.get());
+        vm->viewer_manager.CreateDisplay();
+
+        vm->StopExecutionLoop();
+        vm_thread.join();
+        if (!vm->IsReloadRequested()) {
+            break;
+        }
     }
-
-    thread vm_thread(RunVMThread, vm.get());
-    vm->viewer_manager.CreateDisplay();
-
-    vm->StopExecutionLoop();
-    vm_thread.join();
     return 0;
 }

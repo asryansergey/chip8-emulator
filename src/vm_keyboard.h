@@ -29,6 +29,7 @@ class VMKeyboard {
 
    public:
     std::atomic<int8_t> last_key_pressed{-1};
+    std::atomic<u_char> request_reload{0};
 
     VMKeyboard() {
         keys_pressed.resize(keys.size(), 0);
