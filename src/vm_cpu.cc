@@ -7,9 +7,6 @@ bool Chip8VM::ReadGameImage(const char* input_name) {
         printf("%s %d\n", "Could not open input image! Error code: ", errno);
         return false;
     }
-    for (uint8_t i = 0; i < fonts.size(); ++i) {
-        mem_space[i] = fonts[i];
-    }
     return fread(&mem_space[0] + kOffsetAddress, 1, 4096 - kOffsetAddress, f.get()) > 0;
 }
 

@@ -100,15 +100,18 @@ class Chip8VM {
             {"FX55", 0xF055, 0xF0FF, &Chip8VM::OpcodeFX55},
             {"FX65", 0xF065, 0xF0FF, &Chip8VM::OpcodeFX65}};
 
-    void FetchInstruction();
-    void DecodeInstruction();
-    void ExecuteInstruction();
+    void LoadFontsIntoMemory() {
+        for (uint8_t i = 0; i < fonts.size(); ++i) {
+            mem_space[i] = fonts[i];
+        }
+    }
 
    public:
     VMViewer viewer_manager{};
     Chip8VM() {
-        mem_space.resize(4096, 0);
         frame_buffer.resize(64 * 32, 0);  // Chip8 display resolution is 64x32
+        mem_space.resize(4096, 0);
+        LoadFontsIntoMemory();
     }
 
     ~Chip8VM() {}
