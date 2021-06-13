@@ -24,6 +24,11 @@ class VMKeyboard {
         {SDLK_d, 13},
         {SDLK_e, 14},
         {SDLK_f, 15},
+
+        {SDLK_UP, 2},
+        {SDLK_DOWN, 8},
+        {SDLK_LEFT, 4},
+        {SDLK_RIGHT, 6},
     };
     std::vector<u_char> keys_pressed;
 
